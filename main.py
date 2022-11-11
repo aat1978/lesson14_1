@@ -16,7 +16,7 @@ app = flask.Flask(__name__)
 def search_by_name(title):
     """
     поиск по названию
-    :param path:
+    :param title:
     :return:
     """
     _sql = f'''SELECT title, country, release_year, listed_in as genre, description
@@ -27,15 +27,16 @@ def search_by_name(title):
     result = None
     for item in run_sql(_sql=_sql):
         result = dict(item)
-#    return flask.jsonify(result)
-    return app.response_class(json.dumps(result, ensure_ascii=False, indent=4), mimetypes="application/json")
+    return flask.jsonify(result)
+#    return app.response_class(json.dumps(result, ensure_ascii=False, indent=4), mimetypes="application/json")
 
 
 @app.get("/movie/<int:year_min>/to/<int:year_max>")
 def search_by_release_year(year_min, year_max):
     """
     поиск по диапазону лет выпуска
-    :param path:
+    :param year_max:
+    :param year_min:
     :return:
     """
     _sql = f'''
@@ -47,25 +48,25 @@ def search_by_release_year(year_min, year_max):
     result = []
     for item in run_sql(_sql=_sql):
         result.append(dict(item))
-#    return flask.jsonify(result)
-    return app.response_class(json.dumps(result, ensure_ascii=False), mimetypes="application/json")
+    return flask.jsonify(result)
+#    return app.response_class(json.dumps(result, ensure_ascii=False), mimetypes="application/json")
 
 
 @app.get("/rating/<rating>")
 def search_by_rating(rating):
     """
     поиск по рейтингу
-    :param path:
+    :param rating:
     :return:
     """
-    my_dict={
-        "children":("G", "G"),
-        "family":("G", "PG", "PG-13"),
-        "adult":("R", "NC-17")
+    my_dict = {
+        "children": ("G", "G"),
+        "family": ("G", "PG", "PG-13"),
+        "adult": ("R", "NC-17")
     }
     sql = f'''SELECT title, rating, description 
                FROM netflix 
-               WHERE rating in {my.dict.get(rating, ('PG-B', 'NC-17'))}
+               WHERE rating in {my_dict.get(rating, ('PG-B', 'NC-17'))}
             '''
     return flask.jsonify(run_sql(sql))
 
@@ -74,12 +75,12 @@ def search_by_rating(rating):
 def search_by_genre(genre):
     """
     поиск по жанру
-    :param path:
+    :param genre:
     :return:
     """
     sql = f'''SELECT * 
                FROM netflix 
-               WHERE listed_in like '%{genre.title()}%'
+               WHERE listed_in like {genre}
             '''
     return flask.jsonify(run_sql(sql))
 
@@ -87,7 +88,6 @@ def search_by_genre(genre):
 def search_by_actors(name1='Rose McIver', name2='Ben Lamp'):
     """
     функция, которая получает в качестве аргумента имена двух актеров
-    :param path:
     :return:
     """
     sql = f'''
@@ -114,7 +114,6 @@ def search_by_actors(name1='Rose McIver', name2='Ben Lamp'):
 def type_film(types='TV Show', release_year=2021, genre='TV'):
     """
     функция, с помощью которой можно будет передавать тип картины
-    :param path:
     :return:
     """
     sql = f'''
@@ -130,6 +129,7 @@ def type_film(types='TV Show', release_year=2021, genre='TV'):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    app.run(host="localhost", port=5000)
+#    app.run(host="localhost", port=5000)
+    print(search_by_genre('R'))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
