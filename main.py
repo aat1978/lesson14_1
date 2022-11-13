@@ -79,8 +79,10 @@ def search_by_genre(genre):
     :return:
     """
     sql = f'''SELECT * 
-               FROM netflix 
-               WHERE listed_in like {genre}
+              FROM netflix
+              WHERE listed_in LIKE '%{genre.title()}%'
+              ORDER BY release_year desc
+              LIMIT 10
             '''
     return flask.jsonify(run_sql(sql))
 
@@ -129,7 +131,7 @@ def type_film(types='TV Show', release_year=2021, genre='TV'):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-#    app.run(host="localhost", port=5000)
-    print(search_by_genre('R'))
+    app.run(host="localhost", port=5000, debug=True)
+#    print(search_by_genre('R'))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
